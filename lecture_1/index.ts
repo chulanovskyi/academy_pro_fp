@@ -17,117 +17,120 @@ interface IOrder {
   date?: string;
 }
 
-interface IOrders {
-  orders: IOrder[];
+interface IGroupedBy {
+  [date: string]: IOrder[];
 }
 
-interface IOrdersTable {
-  orders: {
-    [date: string]: IOrder[];
-  };
+interface IGroupByField {
+  (orders: IOrder[], field: string): IGroupedBy;
 }
 
 interface ICapitalizeField {
-  object: object;
-  field: string;
+  (object: object, field: string): object;
 }
 
 interface Array<T> {
   fill(value: T): Array<T>;
 }
 
+interface IPrintTable {
+  (table: { headers: string[]; separators: string[]; rows: Array<string[]> }): void;
+}
+
 const isNoEmptyFields = (order: IOrder) => !!(order.name && order.price && order.date);
+
 const getDateValue = (date: string) => new Date(date).valueOf();
 
 const capitalize = (name: string = '') => name.charAt(0).toUpperCase() + name.slice(1);
-const capitalizeFieldValue = ({ object, field }: ICapitalizeField) => {
-  const newObj = { ...object };
-  newObj[field] = capitalize(object[field]);
-  return newObj;
-};
 
-const capitalizeOrderNames = ({ orders }: IOrders) =>
-  orders && orders.map(object => capitalizeFieldValue({ object, field: 'name' }));
+const capitalizeFieldValue: ICapitalizeField = (object, field) => ({
+  ...object,
+  [field]: capitalize(object[field])
+});
 
-const validate = ({ orders }: IOrders) =>
+const capitalizeOrderNames = (orders: IOrder[]) =>
+  orders.map(order => capitalizeFieldValue(order, 'name'));
+
+const validate = (orders: IOrder[]) =>
   orders.reduce(
-    (result, order) => {
-      isNoEmptyFields(order) ? result.valid.push(order) : result.invalid.push(order);
-      return result;
-    },
+    (result, order) =>
+      isNoEmptyFields(order)
+        ? { ...result, valid: [...result.valid, order] }
+        : { ...result, invalid: [...result.invalid, order] },
     { valid: [], invalid: [] }
   );
 
-const sortOrdersByDate = ({ orders }: IOrders) => {
-  const sorted = [...orders].sort((a, b) => getDateValue(a.date) - getDateValue(b.date));
-  return { orders, sorted };
-};
+const sortOrdersByDate = (orders: IOrder[]) =>
+  [...orders].sort((a, b) => getDateValue(a.date) - getDateValue(b.date));
 
-const formatOrdersPrice = ({ orders }: IOrders) =>
+const formatOrdersPrice = (orders: IOrder[]) =>
   orders.reduce(
-    (result, order) => {
-      const newObj = { ...order };
-      newObj.price = `$${order.price}`;
-      result.formatted.push(newObj);
-      return result;
-    },
-    { orders, formatted: [] }
+    (result, order) => [
+      ...result,
+      {
+        ...order,
+        price: `$${order.price}`
+      }
+    ],
+    []
   );
 
-const combineOrdersByDate = ({ orders }: IOrders) =>
+const groupByField: IGroupByField = (orders: IOrder[], by: string) =>
   orders.reduce(
-    (result, order) => {
-      result.combined[order.date]
-        ? result.combined[order.date].push(order)
-        : (result.combined[order.date] = [order]);
-      return result;
-    },
-    { orders, combined: {} }
+    (result, order) => ({
+      ...result,
+      [order[by]]: result[order[by]] ? [...result[order[by]], order] : [order]
+    }),
+    {} as IGroupedBy
   );
 
-const getMaxRows = ({ orders }: IOrdersTable) =>
+const getMaxRows = (orders: IGroupedBy) =>
   Math.max(...Object.keys(orders).map(date => orders[date].length));
 
 const getNameAndPrice = (order: IOrder) => `${order.name} - ${order.price}`;
 
-const printTable = ({ orders }: IOrdersTable) => {
-  const separator = ' | ';
+const ordersToTable = (orders: IGroupedBy) => {
   const emptyCell = '---';
+  const maxRows = getMaxRows(orders);
+  const iterator = [...Array(maxRows).fill(0)];
+  return Object.keys(orders).reduce(
+    (table, date) => ({
+      headers: [...table.headers, date],
+      separators: [...table.separators, emptyCell],
+      rows: iterator.map((_, i) => {
+        const order = orders[date][i];
+        const nameAndPrice = order ? getNameAndPrice(order) : emptyCell;
+        const row = table.rows[i];
+        return row ? [...row, nameAndPrice] : [nameAndPrice];
+      })
+    }),
+    { headers: [], separators: [], rows: [] }
+  );
+};
+
+const printTable: IPrintTable = ({ headers, separators, rows }) => {
+  const separator = ' | ';
   const outSeparator = (content: string) => `| ${content} |`;
   const joinWithSeparator = content => content.join(separator);
 
-  const maxRows = getMaxRows({ orders });
-  const iterator = [...Array(maxRows)].fill(null);
-  const resultTable = Object.keys(orders).reduce(
-    (table, date) => {
-      const purchases = orders[date];
-      table.headers.push(date);
-      table.separators.push(emptyCell);
-      iterator.map((_, row) => {
-        const order = purchases[row];
-        const nameAndPrice = order ? getNameAndPrice(order) : emptyCell;
-        table.rows[row] ? table.rows[row].push(nameAndPrice) : (table.rows[row] = [nameAndPrice]);
-      });
-      return table;
-    },
-    { headers: [], separators: [], rows: [] }
-  );
   console.log('## Output\n');
-  console.log(outSeparator(joinWithSeparator(resultTable.headers)));
-  console.log(outSeparator(joinWithSeparator(resultTable.separators)));
-  resultTable.rows.map(row => console.log(outSeparator(joinWithSeparator(row))));
+  console.log(outSeparator(joinWithSeparator(headers)));
+  console.log(outSeparator(joinWithSeparator(separators)));
+  rows.forEach(row => console.log(outSeparator(joinWithSeparator(row))));
   console.log();
 };
 
-const printIncorrect = ({ orders }: IOrders) => {
+const printIncorrect = (orders: IOrder[]) => {
   console.log('### Incorrect rows\n');
-  orders.map(order => console.log(`${JSON.stringify(order)},`));
+  orders.forEach(order => console.log(`${JSON.stringify(order)},`));
 };
 
-const validated = validate({ orders: input });
-const sorted = sortOrdersByDate({ orders: validated.valid });
-const formatPrice = formatOrdersPrice({ orders: sorted.sorted });
-const capitalized = capitalizeOrderNames({ orders: formatPrice.formatted });
-const combined = combineOrdersByDate({ orders: capitalized });
-printTable({ orders: combined.combined });
-printIncorrect({ orders: validated.invalid });
+const validated = validate(input);
+const sorted = sortOrdersByDate(validated.valid);
+const formatPrice = formatOrdersPrice(sorted);
+const capitalized = capitalizeOrderNames(formatPrice);
+const groupedByDate = groupByField(capitalized, 'date');
+const ordersTable = ordersToTable(groupedByDate);
+
+printTable(ordersTable);
+printIncorrect(validated.invalid);
