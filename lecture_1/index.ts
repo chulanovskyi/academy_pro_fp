@@ -64,16 +64,10 @@ const sortOrdersByDate = (orders: IOrder[]) =>
   [...orders].sort((a, b) => getDateValue(a.date) - getDateValue(b.date));
 
 const formatOrdersPrice = (orders: IOrder[]) =>
-  orders.reduce(
-    (result, order) => [
-      ...result,
-      {
-        ...order,
-        price: `$${order.price}`
-      }
-    ],
-    []
-  );
+  orders.map(order => ({
+    ...order,
+    price: `$${order.price}`
+  }));
 
 const groupByField: IGroupByField = (orders: IOrder[], by: string) =>
   orders.reduce(
