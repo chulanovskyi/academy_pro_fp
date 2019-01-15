@@ -93,10 +93,10 @@ Agenda:
 f(g(z(x))) === (f @ g @ z)(x)
 
     const compose = (...fns) => x =>
-        fns.reduce((v, fn) => fn(v), x);
+        fns.reduceRight((v, fn) => fn(v), x);
 
     const pipe = (...fns) => x =>
-        fns.reduceRight((v, f) => f(v), x);
+        fns.reduce((v, f) => f(v), x);
 
 ---
 
