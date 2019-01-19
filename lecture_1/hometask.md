@@ -1,7 +1,7 @@
 # Hometask 1
 ## Solve the task using pure functions, immutable objects and function composition (it would be better if you use point free functions).
 
-> You have a list of orders { name, price, date }. You have to write a public function that transform the list to matrix grouped by date. (you can write as much private functions as you need).
+> You have a list of orders { name, price, date }. You have to write a public function that transforms the list to matrix grouped by date. (you can write as many private functions as you need).
 > - Names should be capitalized.
 > - Price should be extended with $ prefix
 > - If the row has invalid data (empty name, date or price) store it in the separate collection
