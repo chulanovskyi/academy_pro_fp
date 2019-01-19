@@ -1,6 +1,7 @@
 .grid-container {
     display: flex;
-    width: 500px;
-    height: 500px;
+    flex-direction: column;
+    width: 50vh;
+    height: 50vh;
     flex-wrap: wrap;
 }
