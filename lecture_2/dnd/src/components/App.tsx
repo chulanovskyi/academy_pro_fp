@@ -5,7 +5,7 @@ import 'styles/app.css';
 
 const App = () => (
   <div className="dnd-container flex-center">
-    <Grid matrix={matrix}/>
+    <Grid matrix={matrix} />
   </div>
 );
 

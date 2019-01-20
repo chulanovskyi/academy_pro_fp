@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "esnext",
+    "noEmit": true,
+    "isolatedModules": false,
+    "strict": true,
+    "declaration": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "moduleResolution": "node",
+    "jsx": "react",
+    "baseUrl": "src"
+  }
+}
