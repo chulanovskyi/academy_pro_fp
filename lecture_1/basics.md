@@ -202,7 +202,7 @@ OOP should describe objects in the real world. Basicaly it should allow objects 
 ---
 
 ## What does FP mean?
-- **Statless - focus on one thing.** If you program consists of well written functions, you think about 10 lines of code every moment.
+- **Stateless - focus on one thing.** If you program consists of well written functions, you think about 10 lines of code every moment.
 - **Function - first-class citizen.** Function can be a container, an input and an output.
 - **Pureness.** Function returns the same output for the same input. Function receives at least 1 argument and returns a result. Function has no side-effects.
 - **Total.** A function that is defined for all possible values of its input.
