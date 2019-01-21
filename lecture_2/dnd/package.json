@@ -17,7 +17,17 @@
     "eject": "react-scripts-ts eject"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": [
+      "react-app",
+      "plugin:prettier/recommended"
+    ],
+    "plugins": [
+      "prettier"
+    ]
+  },
+  "prettier": {
+    "singleQuote": true,
+    "printWidth": 100
   },
   "browserslist": [
     ">0.2%",
@@ -30,7 +40,11 @@
     "@types/ramda": "^0.25.47",
     "@types/react": "^16.7.20",
     "@types/react-dom": "^16.0.11",
+    "eslint-config-prettier": "^3.6.0",
+    "eslint-plugin-prettier": "^3.0.1",
+    "prettier": "^1.16.0",
     "tslint": "^5.12.1",
+    "tslint-config-prettier": "^1.17.0",
     "tslint-react": "^3.6.0",
     "typescript": "^3.2.4"
   }

@@ -1,31 +1,15 @@
 import * as React from 'react';
 import * as R from 'ramda';
 import Tile from 'components/Tile';
-import { ITile, Matrix } from 'models';
+import { onOutsideClick } from 'services/dom';
+import { ITile, Matrix, ClickEvent, Action, DivNode } from 'models';
 import 'styles/grid.css';
 
 interface IGridProps {
   matrix: Matrix;
 }
 
-type ClickEvent = React.MouseEvent | Event;
-type Node = React.RefObject<HTMLDivElement>;
-type Action = () => void;
-
-const onOutsideClick = (
-  evt: ClickEvent,
-  node: Node,
-  action: Action
-) => {
-  evt.preventDefault();
-  evt.stopPropagation();
-  if (evt.target && node.current) {
-    const isOutsideNode = (evt.target as Element).closest(`.${node.current.className}`) === null;
-    isOutsideNode && action();
-  }
-};
-
-const deselectOnOutsideClick = (node: Node, action: Action) => () => {
+const deselectOnOutsideClick = (node: DivNode, action: Action) => () => {
   const deselect = (evt: ClickEvent) => onOutsideClick(evt, node, action);
   document.addEventListener('click', deselect);
 
@@ -39,22 +23,26 @@ const Grid = ({ matrix }: IGridProps) => {
   const gridRef = React.useRef(null);
   React.useEffect(deselectOnOutsideClick(gridRef, () => setActive({})));
 
-  const getMatrix = () => (
-    R.map(column => (
-      R.map(item => (
-        <Tile
-          key={item.id}
-          isActive={item.id === (activeTile as ITile).id}
-          onClick={() => setActive(item)}
-          {...item}
-        />
-      ), column)
-    ), matrix)
-  );
+  const renderMatrix = () =>
+    R.map(
+      column =>
+        R.map(
+          item => (
+            <Tile
+              key={item.id}
+              isActive={item.id === (activeTile as ITile).id}
+              onClick={() => setActive(item)}
+              {...item}
+            />
+          ),
+          column
+        ),
+      matrix
+    );
 
   return (
     <div className="grid-container" ref={gridRef}>
-      {getMatrix()}
+      {renderMatrix()}
     </div>
   );
 };

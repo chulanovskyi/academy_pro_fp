@@ -1,7 +1,8 @@
 {
   "extends": [
     "tslint:recommended",
-    "tslint-react"
+    "tslint-react",
+    "tslint-config-prettier"
   ],
   "linterOptions": {
     "exclude": [
@@ -28,6 +29,7 @@
     "no-unused-expression": false,
     "jsx-no-lambda": false,
     "jsx-boolean-value": [true, "never"],
+    "jsx-no-multiline-js": false,
     "trailing-comma": false,
     "arrow-parens": false
   }
