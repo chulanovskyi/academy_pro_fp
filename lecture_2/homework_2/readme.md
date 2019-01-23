@@ -1,1 +1,1 @@
-open index.html in browser
+* run `tsc index.ts && node .`

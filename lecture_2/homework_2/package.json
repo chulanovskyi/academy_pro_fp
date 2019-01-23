@@ -1,0 +1,21 @@
+{
+  "name": "homework_2",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "tsc index.ts && node ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chulanovskyi/academy_pro_fp.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chulanovskyi/academy_pro_fp/issues"
+  },
+  "homepage": "https://github.com/chulanovskyi/academy_pro_fp#readme",
+  "devDependencies": {
+    "ramda": "^0.26.1",
+    "@types/ramda": "^0.25.47"
+  }
+}

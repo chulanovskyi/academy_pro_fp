@@ -1,2 +1,5 @@
 /.idea
 *review*
+*.js
+*.lock
+node_modules

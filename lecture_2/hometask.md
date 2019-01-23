@@ -26,8 +26,7 @@
 
     printTable(table);
 
-| id: 0 | id: 3 | id: 6 |
- | --- | --- | --- |
+ | id: 0 | id: 3 | id: 6 |
  | id: 1 | id: 4 | id: 7 |
  | id: 2 | id: 5 | id: 8 |
 
@@ -60,8 +59,9 @@
             { id: 0, row: 2, column: 2, position: 9 },
         ]
     ]
-
-| id: 1 | id: 4 | id: 7 |
+ 
+ | | | |
  | --- | --- | --- |
+ | id: 1 | id: 4 | id: 7 |
  | id: 2 | id: 5 | id: 8 |
  | id: 3 | id: 6 | id: 0 |
