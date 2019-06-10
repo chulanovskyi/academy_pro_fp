@@ -15,6 +15,7 @@
   },
   "homepage": "https://github.com/chulanovskyi/academy_pro_fp#readme",
   "devDependencies": {
+    "@types/node": "^12.0.7",
     "@types/ramda": "^0.26.9",
     "ramda": "^0.26.1"
   }

@@ -11,18 +11,19 @@ const countMatrixItems = (size: number): number => size ** 2;
 
 const generateNumbers = (count: number): number[] => R.times(R.identity, count);
 
-const numbersToChunks = (nums: number[]): number[][] => R.splitEvery(getSquareRoot(nums.length), nums);
+const numbersToChunks = (nums: number[]): number[][] =>
+  R.splitEvery(getSquareRoot(nums.length), nums);
 
 const numbersToItems = (matrix: number[][]) =>
   mapIndexed(
     (row: number[], rowIdx: number) =>
       mapIndexed(
         (item: number, itemIdx: number) => ({
-            id: item,
-            position: item + 1,
-            column: rowIdx,
-            row: itemIdx
-          }),
+          id: item,
+          position: item + 1,
+          column: rowIdx,
+          row: itemIdx
+        }),
         row
       ),
     matrix
@@ -32,9 +33,9 @@ const correctItemsMeta = (matrix: Matrix) =>
   mapIndexed(
     (row: IMatrixItem[], rowIdx: number) =>
       mapIndexed(
-        (item: IMatrixItem, colIdx: number) => ({
+        (item: IMatrixItem, itemIdx: number) => ({
           id: item.id,
-          row: colIdx,
+          row: itemIdx,
           column: rowIdx,
           position: item.position
         }),
@@ -47,37 +48,31 @@ const rearrangeMatrix = (matrix: Matrix, newCol: number, newRow: number, item: I
   // Item lens, mutates original
   const rowLens = R.lensIndex(newRow);
   const colLens = R.lensIndex(newCol);
-  const targetPosition = R.view<number, IMatrixItem>(
-    colLens,
-    R.view<Matrix, number>(
-      rowLens,
-      matrix
-    )
-  ).position - 1; // adjust real position
+  const targetPosition =
+    R.view<number, IMatrixItem>(colLens, R.view<Matrix, number>(rowLens, matrix)).position - 1; // adjust real position
   // <<<---
 
-
   const flat = R.flatten<IMatrixItem>(matrix);
-  const omit = R.without([item], flat);
-  const deployItem = R.insert(targetPosition, item, omit);
-  const mapPosition = mapIndexed<IMatrixItem[]>((item, idx) => ({...item, position: idx + 1 }), deployItem);
-  const newMatrix = R.splitEvery<IMatrixItem>(3, mapPosition);
+  const withoutItem = R.without<IMatrixItem>([item], flat);
+  const deployItem = R.insert<IMatrixItem>(targetPosition, item, withoutItem);
+  const resetPosition = mapIndexed(
+    (item: IMatrixItem, idx) => ({ ...item, position: idx + 1 }),
+    deployItem
+  );
+  const newMatrix = R.splitEvery(3, resetPosition) as Matrix;
   return correctItemsMeta(newMatrix);
 };
 
 // for printing
-const mapIds = (matrix: Matrix) => R.map(
-  row => R.map(
-    item => `id: ${item.id}`, row
-  ), matrix
-);
+const mapIds = (matrix: Matrix) => R.map(row => R.map(item => `id: ${item.id}`, row), matrix);
 
 const printMatrix = (matrix: Matrix) => {
-  // const separator = ' | ';
-  // const outSeparator = (content: string | number ) => `| ${content} |`;
-  // const joinWithSeparator = <T>(content: T[]) => content.join(separator);
-  console.log(mapIds(matrix));
-  console.log('___')
+  const separator = ' | ';
+  const joinWithSeparator = (content: string[], s: string = separator) => content.join(s);
+  const singleRows = R.map(joinWithSeparator, R.transpose(mapIds(matrix)));
+
+  R.forEach(console.log, singleRows);
+  console.log('___');
 };
 
 // go
